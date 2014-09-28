@@ -52,11 +52,11 @@ public class Loan {
 		this.item = item;
 		this.due = due;
 	}
-	public double checkin(){
-		double fine = 0;
-		if(due < 0) fine = -1 * due * .20;
+	public double calculateFine(){
+		return Math.max(0, due * -0.25);
+	}
+	public void checkin(){
 		user = null;
 		item = null;
-		return fine;
 	}
 }

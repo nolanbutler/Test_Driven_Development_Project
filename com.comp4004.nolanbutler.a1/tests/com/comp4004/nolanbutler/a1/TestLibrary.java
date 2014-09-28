@@ -737,6 +737,194 @@ public class TestLibrary {
 		library.renewLoan(loanId);
 		fail("Loan was renewed a third time");
 	}
+	//________________________________USER STORY BLOCK 9_____________________________
+	@Test
+	public void returnLoan(){ //9.1
+		//test input
+		String name = "John";
+		String title = "Detective comics";
+		String author = "Bman";
+		int year = 1939;
+		//end of test input
+				
+		User newUser = new User();
+		newUser.setName(name);
+				
+		Title newTitle = new Title();
+		newTitle.setTitle(title);
+		newTitle.setAuthor(author);
+		newTitle.setPublicationYear(year);
+				
+		Item newItem = new Item();
+				
+		Library library = new Library();
+				
+		int userId = library.addUser(newUser);
+		int titleId = library.addTitle(newTitle);
+		int itemId = library.addItem(titleId, newItem);
+				
+		int loanId = library.requestLoan(userId, itemId);
+
+		assertEquals("Loan is made: name of user = ", name, library.getLoan(loanId).getUser().getName());
+		assertEquals("Loan is made: title of item = ", title, library.getLoan(loanId).getItem().getTitle().getTitle());
+		
+		library.returnLoan(loanId);
+
+		assertEquals("Loan returned: item.isLoaned = ", false, library.getItem(itemId).isLoaned());
+		assertEquals("Loan returned: user.hasLoan = ", false, library.getUser(userId).hasLoan());
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void returnLoanLoanDoesNotExist(){
+		//test input
+		int fakeId = 9876;
+		//end of test input
+		
+		Library library = new Library();
+		
+		library.returnLoan(fakeId);
+	}
+	@Test
+	public void returnLoanLate(){
+		//test input
+		String name = "John";
+		String title = "Detective comics";
+		String author = "Bman";
+		int year = 1939;
+		//end of test input
+				
+		User newUser = new User();
+		newUser.setName(name);
+				
+		Title newTitle = new Title();
+		newTitle.setTitle(title);
+		newTitle.setAuthor(author);
+		newTitle.setPublicationYear(year);
+				
+		Item newItem = new Item();
+				
+		Library library = new Library();
+				
+		int userId = library.addUser(newUser);
+		int titleId = library.addTitle(newTitle);
+		int itemId = library.addItem(titleId, newItem);
+				
+		int loanId = library.requestLoan(userId, itemId);
+
+		library.getLoan(loanId).setDue(-2);
+		
+		library.returnLoan(loanId);
+		
+		assertTrue("User should now have a fine for returning it late: " + library.getUser(userId).getFine(), library.getUser(userId).getFine() > 0.0);
+	}
+	//________________________________USER STORY BLOCK 10_____________________________
 	
-	
+	@Test
+	public void collectFine(){ //10.1
+		//test input
+		String name = "Tywin";
+		double debt = 1.50;
+		double amountPayed = -1.50;
+		//end of test input
+		
+		User newUser = new User();
+		newUser.setName(name);
+		newUser.changeFine(debt);
+		Library library = new Library();
+		int userId = library.addUser(newUser);
+		
+		assertTrue("In debt: " + newUser.getFine(), newUser.getFine() == debt);
+		
+		library.collectFine(userId, amountPayed);
+		
+		assertTrue("In debt", newUser.getFine() == debt + amountPayed);
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void collectFineUserDoesNotExist(){ //10.2
+		//test input
+		int fakeId = 9999;
+		double amountPayed = -1.00;
+		//end of test input
+		
+		Library library = new Library();
+		
+		library.collectFine(fakeId, amountPayed);
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void collectFinePayingNegativeAmount(){ //10.3
+		//test input
+		String name = "Cersei";
+		double amountPayed = 1.50;
+		//end of test input
+		
+		User newUser = new User();
+		newUser.setName(name);
+
+		Library library = new Library();
+		int userId = library.addUser(newUser);
+		
+		library.collectFine(userId, amountPayed);
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void collectFinePayingTooMuch(){ //10.4
+		//test input
+		String name = "Tyrion";
+		double debt = 10.0;
+		double amountPayed = -100.0;
+		//end of test input
+		
+		User newUser = new User();
+		newUser.setName(name);
+		newUser.changeFine(debt);
+
+		Library library = new Library();
+		int userId = library.addUser(newUser);
+		
+		library.collectFine(userId, amountPayed);
+	}
+	//________________________________USER STORY BLOCK 11_____________________________
+	@Test
+	public void monitorSystem(){ //11.1
+		//test input
+		String name1 = "Jon", name2 = "Robb", name3 = "Sansa", name4 = "Arya", name5 = "Bran", name6 = "Rickon";
+		String t1 = "Ghost", t2 = "Grey Wind", t3 = "Lady", t4 = "Nymeria", t5 = "Summer", t6 = "Shaggydog";
+		String author = "Ned";
+		int year = 1996;
+		//
+		
+		User user1 = new User(); User user2 = new User(); User user3 = new User();
+		User user4 = new User(); User user5 = new User(); User user6 = new User();
+		user1.setName(name1); user2.setName(name2); user3.setName(name3);
+		user4.setName(name4); user5.setName(name5); user6.setName(name6);
+		
+		Title title1 = new Title(); Title title2 = new Title(); Title title3 = new Title();
+		Title title4 = new Title(); Title title5 = new Title(); Title title6 = new Title();
+		title1.setTitle(t1); title2.setTitle(t2); title3.setTitle(t3);
+		title4.setTitle(t4); title5.setTitle(t5); title6.setTitle(t6);
+		title1.setAuthor(author); title2.setAuthor(author); title3.setAuthor(author);
+		title4.setAuthor(author); title5.setAuthor(author); title6.setAuthor(author);
+		title1.setPublicationYear(year); title2.setPublicationYear(year); title3.setPublicationYear(year);
+		title4.setPublicationYear(year); title5.setPublicationYear(year); title6.setPublicationYear(year);
+		
+		Item item1 = new Item(); Item item2 = new Item(); Item item3 = new Item(); Item item4 = new Item();
+		Item item5 = new Item(); Item item6 = new Item(); Item item7 = new Item(); Item item8 = new Item();
+		
+		Library library = new Library();
+		
+		int u1id = library.addUser(user1); int u2id = library.addUser(user2); int u3id = library.addUser(user3);
+		int u4id = library.addUser(user4); int u5id = library.addUser(user5); int u6id = library.addUser(user6);
+		
+		int t1id = library.addTitle(title1); int t2id = library.addTitle(title2); int t3id = library.addTitle(title3);
+		int t4id = library.addTitle(title4); int t5id = library.addTitle(title5); int t6id = library.addTitle(title6);
+		
+		int i1id = library.addItem(t1id, item1); int i2id = library.addItem(t2id, item2); int i3id = library.addItem(t3id, item3);
+		int i4id = library.addItem(t4id, item4); int i5id = library.addItem(t5id, item5); int i6id = library.addItem(t6id, item6);
+		int i7id = library.addItem(t3id, item7); int i8id = library.addItem(t5id, item8);
+		
+		library.requestLoan(u1id, i1id); library.requestLoan(u2id, i2id); library.requestLoan(u3id, i3id);
+		library.requestLoan(u4id, i4id); library.requestLoan(u5id, i5id); library.requestLoan(u6id, i6id);
+		
+		//this needs manual verification, I'm not exactly sure how to do it
+		String reportString = library.report();
+		//fail(reportString);
+	}
 }

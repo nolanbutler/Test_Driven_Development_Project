@@ -131,4 +131,34 @@ public class Library {
 		
 		loan.renew(7);
 	}
+
+	public void returnLoan(int loanId) {
+		Loan loan = loans.get(loanId);
+		if(loan == null) throw new IllegalArgumentException("returnLoan: loan does not exist");
+		
+		loan.getUser().changeFine(loan.calculateFine());
+		loan.getUser().removeLoan(loanId);
+		loan.getItem().removeLoan();
+		loan.checkin();
+	}
+
+	public void collectFine(int userId, double amountPayed) {
+		if(amountPayed > 0) throw new IllegalArgumentException("collectFine: cannot take a loan out from the library");
+		User user = getUser(userId);
+		if(user == null) throw new IllegalArgumentException("collectFine: user does not exist");
+		if(Math.abs(user.getFine()) < Math.abs(amountPayed)) throw new IllegalArgumentException("collectFine: you are paying too much");
+		
+		user.changeFine(amountPayed);
+	}
+
+	public String report() {
+		String s = "";
+		for(Item i : items.values()){
+			s += "Item ID: " + i.getId() + ", Title: " + i.getTitle().getTitle() + ", Author: " + i.getTitle().getAuthor() + ", Published: " + i.getTitle().getPublicationYear() + "\n";
+			if(i.isLoaned()){
+				s += "On loan to user id: " + i.getLoan().getUser().getId() + ", name: " + i.getLoan().getUser().getName() + ", due in " + i.getLoan().getDue() + " days (or days ago)";
+			}
+		}
+		return s;
+	}
 }

@@ -36,6 +36,9 @@ public class Item {
 	public boolean isLoaned(){
 		return !(loan == null);
 	}
+	public Loan getLoan(){
+		return loan;
+	}
 	public void removeLoan(){
 		loan = null;
 	}

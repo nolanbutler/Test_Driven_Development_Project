@@ -44,9 +44,9 @@ public class User {
 	public boolean hasLoan(){
 		return numOfLoans > 0;
 	}
-	public void removeLoan(int loadId){
+	public void removeLoan(int loanId){
 		for(int i = 0; i < 10; i++){
-			if(loans[i].getId() == loadId){
+			if(loans[i] != null && loans[i].getId() == loanId){
 				loans[i] = null;
 				numOfLoans--;
 			}
