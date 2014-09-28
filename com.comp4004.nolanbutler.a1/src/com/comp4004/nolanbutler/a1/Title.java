@@ -52,4 +52,10 @@ public class Title {
 	public void removeItem(int itemId){
 		items.remove(itemId);
 	}
+	public boolean hasLoanedCopy(){
+		for(Item i : items.values()){
+			if(i.isLoaned()) return true;
+		}
+		return false;
+	}
 }
